@@ -31,7 +31,7 @@ public class Snake{
 	body.set(0, new ArrayList<Integer>(Arrays.asList(tempX+toward[0],
 							 tempY+toward[1])));
 
-	System.out.println(body.get(0).get(1));
+	System.out.println(body.get(0).get(0));
 
 	
 	System.out.println(tempX+toward[0] + " " + (tempY+toward[1]) + " wspo");
@@ -42,7 +42,7 @@ public class Snake{
 	    //body.get(0).set(0, tempX);
 	    //body.get(0).set(1, tempY);
 
-	    body.set(row, new ArrayList<Integer>(Arrays.asList(tempX, tempY)));
+	    body.set(0, new ArrayList<Integer>(Arrays.asList(tempX, tempY)));
 	    
 	    tempX=tX;
 	    tempY=tY;
@@ -72,14 +72,6 @@ public class Snake{
 	    }
 	}
 	return false;
-    }
-
-    public int getLastX(){
-	return body.get(body.size()-1).get(0);
-    }
-
-    public int getLastY(){
-	return body.get(body.size()-1).get(1);
     }
 
     public int getX(){

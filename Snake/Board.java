@@ -64,4 +64,8 @@ public class Board extends GridPane{
 	//this.add(pane, x, y);
     }
 
+    public void clearCell(int x, int y){
+	paneArr.get(x).get(y).setBackground(new Background(new BackgroundFill(Color.GRAY, null, null)));
+    }
+
 }
