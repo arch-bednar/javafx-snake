@@ -89,7 +89,7 @@ public class Start extends Application{
 
 	board.setGridLinesVisible(true);
 
-	Snake snake;
+	Snake snake = new Snake();
 	
 	//test
 	board.setBckg(2,2, false);
@@ -112,22 +112,40 @@ public class Start extends Application{
 
 	Pane score = new Pane();
 	root.setLeft(score);
+
 	Scene scene = new Scene(root, 300, 300);
-	createKeyEvent(scene, board);
+	createKeyEvent(scene, snake, board);
+
 	myGame.setScene(scene);
 	myGame.show();
     }
 
-    public void createKeyEvent(Scene myScene, Board board){
+    public void createKeyEvent(Scene myScene, Snake snake, Board board){
 	myScene.setOnKeyPressed(new EventHandler<KeyEvent>(){
 		@Override
 		public void handle(KeyEvent keyEvent){
-		    if(keyEvent.getCode() == KeyCode.ENTER){
-			board.setBckg(2,3, true);
+		    if(keyEvent.getCode() == KeyCode.D){
+			if(snake.getTowardX() == 0){
+			    snake.setTowardY(0);
+			    snake.setTowardX(1);
+			}
+			else if(snake.getTowardY() == 0){
+			    snake.setTowardX(0);
+			    snake.setTowardY(1);
+			}
 		    }
 		    else if(keyEvent.getCode() == KeyCode.A){
-			board.setBckg(2,3, false);
+			if(snake.getTowardX() == 0){
+			    snake.setTowardY(0);
+			    snake.setTowardX(-1);
+			}
+			else if(snake.getTowardY() == 0){
+			    snake.setTowardX(0);
+			    snake.setTowardY(-1);
+			}
 		    }
+		    System.out.println(" ---- ");
+		    System.out.println(snake.getTowardX() + " " + snake.getTowardY());
 		}
 	    });
     }
