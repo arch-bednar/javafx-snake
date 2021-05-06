@@ -8,16 +8,23 @@ public class Snake{
     public ArrayList<ArrayList<Integer>> body = new ArrayList<ArrayList<Integer>>();
 
     private int[] toward = {0, -1}; //toward x,y
+    public static boolean isDead = false;
     
     public Snake(){
-	for(int i=0; i<2; i++){
+	for(int i=0; i<5; i++){
 	    body.add(new ArrayList<Integer>());
 	}
 
-	body.get(0).add(2);
-	body.get(0).add(2);
-	body.get(1).add(2);
-	body.get(1).add(1);
+	body.get(0).add(12);
+	body.get(0).add(12);
+	body.get(1).add(13);
+	body.get(1).add(12);
+	body.get(2).add(14);
+	body.get(2).add(12);
+	body.get(3).add(15);
+	body.get(3).add(12);
+	body.get(4).add(16);
+	body.get(4).add(12);
     }
 
     public void changePos(){
@@ -66,11 +73,17 @@ public class Snake{
 	headX = body.get(0).get(0);
 	headY = body.get(0).get(1);
 
-	for(int row=1; row<=body.size(); row++){
+	for(int row=1; row<body.size(); row++){
 	    if(headX == body.get(row).get(0) && headY == body.get(row).get(1)){
 		return true;
 	    }
 	}
+	if(headX == 0 || headX == 19){
+	    return true;
+	}else if(headY == 0 || headY == 19){
+	    return true;
+	}
+	
 	return false;
     }
 

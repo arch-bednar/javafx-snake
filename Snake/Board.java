@@ -10,6 +10,7 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.paint.Color;
 import java.util.ArrayList;
+import javafx.scene.shape.Line;
 
 public class Board extends GridPane{
 
@@ -31,7 +32,11 @@ public class Board extends GridPane{
 	    paneArr.add(new ArrayList<Pane>());
 	    for (int j=0; j<20; j++){
 		Pane pane = new Pane();
-		pane.setBackground(new Background(new BackgroundFill(Color.GRAY, null, null)));
+		if(i == 0 || i == 19 || j == 0 || j == 19){
+		    pane.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
+		}else{
+		    pane.setBackground(new Background(new BackgroundFill(Color.GRAY, null, null)));
+		}
 		this.add(pane, i, j);
 		//this.paneArr[i][j] = pane;
 		paneArr.get(i).add(pane);
@@ -57,7 +62,7 @@ public class Board extends GridPane{
 	    paneArr.get(x).get(y).setBackground(new Background(new BackgroundFill(Color.YELLOW, null, null)));
 	}
 	else{
-	    paneArr.get(x).get(y).setBackground(new Background(new BackgroundFill(Color.RED, null, null)));
+	    paneArr.get(x).get(y).setBackground(new Background(new BackgroundFill(Color.GREEN, null, null)));
 	}
 
 	this.setConstraints(paneArr.get(x).get(y), x, y);
@@ -66,6 +71,17 @@ public class Board extends GridPane{
 
     public void clearCell(int x, int y){
 	paneArr.get(x).get(y).setBackground(new Background(new BackgroundFill(Color.GRAY, null, null)));
+    }
+
+    public void drawDeadHead(int x, int y){
+	paneArr.get(x).get(y).getChildren().add(this.drawLine(0, 0, 15, 15));
+	paneArr.get(x).get(y).getChildren().add(this.drawLine(15, 0, 0, 15));
+    }
+
+    public Line drawLine(int startX, int startY, int endX, int endY){
+	Line line = new Line(startX, startY, endX, endY);
+	line.setFill(Color.RED);
+	return line;
     }
 
 }

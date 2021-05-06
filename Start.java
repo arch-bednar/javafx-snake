@@ -25,6 +25,8 @@ public class Start extends Application{
     public boolean toBegin = false;
     public Snake snake;
     public Board board;
+    private Thread moving;
+    boolean isDead = false;
     
     public void menu(Stage mainStage){
 	double div = 0.2;
@@ -128,103 +130,146 @@ public class Start extends Application{
 
 	myGame.setScene(scene);
 	myGame.show();
+
+	/*
+	moving = new Thread(){
+		
+		public void run(){
+		
+		    int lastX, lastY;
+		    while(!snake.isDead){
+
+			lastX = snake.getLastX();
+			lastY = snake.getLastY();
+
+			snake.changePosition();
+			
+			for(int i=0; i<snake.body.size(); i++){
+			    if (i==0){
+				board.setBckg(snake.body.get(0).get(0),
+					      snake.body.get(0).get(1),
+					      true);
+			    }else{
+				board.setBckg(snake.body.get(i).get(0),
+					      snake.body.get(i).get(1),
+					      false);
+			    }
+			    
+			}
+
+			board.clearCell(lastX, lastY);
+			
+			if(snake.isCollision()){
+			    System.out.println("Koniec gry");
+			    board.drawDeadHead(snake.getX(), snake.getY());
+			    snake.isDead = true;
+			    return;
+			}
+		    }
+		}
+	    };
+	*/
+	
     }
 
     public void createKeyEvent(Scene myScene){
 	myScene.setOnKeyPressed(new EventHandler<KeyEvent>(){
 		@Override
 		public void handle(KeyEvent keyEvent){
-
-		    int lastX, lastY;
-		    lastX = snake.getLastX();
-		    lastY = snake.getLastY();
-
-		    if(keyEvent.getCode() == KeyCode.D){
-
-			//temporary comment			
-			if(snake.getTowardX() == 0 && snake.getTowardY() == 1){
-			    snake.setTowardX(1);
-			    snake.setTowardY(0);
-			}
-			else if(snake.getTowardX() == 1 && snake.getTowardY() == 0){
-			    snake.setTowardX(0);
-			    snake.setTowardY(1);
-			}
-			else if(snake.getTowardX() == -1 && snake.getTowardY() == 0){
-			    snake.setTowardX(0);
-			    snake.setTowardY(-1);
-			}
-			else if(snake.getTowardX() == 0 && snake.getTowardY() == -1){
-			    snake.setTowardX(1);
-			    snake.setTowardY(0);
-			}
-			board.clearCell(lastX, lastY);
-			snake.changePos();
-		    }
-		    else if(keyEvent.getCode() == KeyCode.A){
-			if(snake.getTowardX() == 0 && snake.getTowardY() == -1){
-			    snake.setTowardX(-1);
-			    snake.setTowardY(0);
-			}
-			else if(snake.getTowardX() == -1 && snake.getTowardY() == 0){
-			    snake.setTowardX(0);
-			    snake.setTowardY(1);
-			}
-			else if(snake.getTowardX() == 1 && snake.getTowardY() == 0){
-			    snake.setTowardX(0);
-			    snake.setTowardY(-1);
-			}
-			else if(snake.getTowardX() == 0 && snake.getTowardY() == 1){
-			    snake.setTowardX(-1);
-			    snake.setTowardY(0);
-			}
-			board.clearCell(lastX, lastY);
-			snake.changePos();
+		    
+		    if(!snake.isDead){
 			
-		    }
-		    else if(keyEvent.getCode() == KeyCode.ENTER){
-			board.clearCell(lastX, lastY);
-			snake.changePos();
-		    }
-		    
-		    //snake.changePos();
-		    for(int i=0; i<snake.body.size(); i++){
-			if (i==0){
-			    board.setBckg(snake.body.get(0).get(0),
-					  snake.body.get(0).get(1),
-					  true);
+			int lastX, lastY;
+			lastX = snake.getLastX();
+			lastY = snake.getLastY();
+			
+			
+			if(keyEvent.getCode() == KeyCode.D){
+			    
+			    if(snake.getTowardX() == 0 && snake.getTowardY() == 1){
+				snake.setTowardX(-1);
+				snake.setTowardY(0);
+			    }else if(snake.getTowardX() == 1 && snake.getTowardY() == 0){
+				snake.setTowardX(0);
+				snake.setTowardY(1);
+			    }else if(snake.getTowardX() == -1 && snake.getTowardY() == 0){
+				snake.setTowardX(0);
+				snake.setTowardY(-1);
+			    }else if(snake.getTowardX() == 0 && snake.getTowardY() == -1){
+				snake.setTowardX(1);
+				snake.setTowardY(0);
+			    }
+			    
+			    //board.clearCell(lastX, lastY);
+			    //snake.changePos();
 			}
-			//else if (i == snake.body.size()){
-			//    board.clearCell(lastX, lastY);
-			//}
-			else{
-			    board.setBckg(snake.body.get(i).get(0),
-					  snake.body.get(i).get(1),
-					  false);
+			else if(keyEvent.getCode() == KeyCode.A){
+			    
+			    if(snake.getTowardX() == 0 && snake.getTowardY() == -1){
+				snake.setTowardX(-1);
+				snake.setTowardY(0);
+			    }else if(snake.getTowardX() == -1 && snake.getTowardY() == 0){
+				snake.setTowardX(0);
+				snake.setTowardY(1);
+			    }else if(snake.getTowardX() == 1 && snake.getTowardY() == 0){
+				snake.setTowardX(0);
+				snake.setTowardY(-1);
+			    }else if(snake.getTowardX() == 0 && snake.getTowardY() == 1){
+				snake.setTowardX(1);
+				snake.setTowardY(0);
+			    }
+			    
+			    //board.clearCell(lastX, lastY);
+			    //snake.changePos();
+			    
+			    //dadwwad
+			    
+			}else if(keyEvent.getCode() == KeyCode.ENTER){
+			    board.clearCell(lastX, lastY);
+			    snake.changePos();
 			}
-
+			
+			
+			
+			//snake.changePos();
+			for(int i=0; i<snake.body.size(); i++){
+			    if (i==0){
+				board.setBckg(snake.body.get(0).get(0),
+					      snake.body.get(0).get(1),
+					      true);
+			    }else{
+				board.setBckg(snake.body.get(i).get(0),
+					      snake.body.get(i).get(1),
+					      false);
+			    }
+			    
+			}
+			
+			if(snake.isCollision()){
+			    System.out.println("Koniec gry");
+			    board.drawDeadHead(snake.getX(), snake.getY());
+			    snake.isDead = true;
+			    return;
+			}
+			
+			System.out.println(" ---- ");
+			System.out.println(snake.getTowardX() + " " + snake.getTowardY());
+			System.out.println(snake.getX() + " " + snake.getY());
+			
+	
 		    }
-		    
-		    System.out.println(" ---- ");
-		    System.out.println(snake.getTowardX() + " " + snake.getTowardY());
-		    System.out.println(snake.getX() + " " + snake.getY());
-
-		    
-			///temporary comment
-
-		    
 		}
 	    });
     }
-    
+	    
     @Override
     public void start(Stage stage){
 	stage.setResizable(false);
 	menu(stage);
     }
-
+	
     
-
+    
     public static void main(String[] args){
 	launch(args);
     }
