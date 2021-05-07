@@ -16,6 +16,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.layout.Pane;
+import java.util.concurrent.TimeUnit;
 
 import Snake.*;
 
@@ -131,18 +132,18 @@ public class Start extends Application{
 	myGame.setScene(scene);
 	myGame.show();
 
-	/*
+	
 	moving = new Thread(){
 		
 		public void run(){
 		
 		    int lastX, lastY;
-		    while(!snake.isDead){
+		    while(!snake.isDead && myGame.isShowing()){
 
 			lastX = snake.getLastX();
 			lastY = snake.getLastY();
 
-			snake.changePosition();
+			snake.changePos();
 			
 			for(int i=0; i<snake.body.size(); i++){
 			    if (i==0){
@@ -165,10 +166,28 @@ public class Start extends Application{
 			    snake.isDead = true;
 			    return;
 			}
+		    
+
+
+		    System.out.println(" ---- ");
+		    System.out.println(snake.getTowardX() + " " + snake.getTowardY());
+		    System.out.println(snake.getX() + " " + snake.getY());
+
+
+		    try{
+			Thread.sleep(1000);
+			System.out.println("sleep");
+		    }catch(InterruptedException ex){
+			ex.getMessage();
+		    }
+		    
 		    }
 		}
 	    };
-	*/
+
+
+	moving.start();
+	
 	
     }
 
@@ -225,32 +244,13 @@ public class Start extends Application{
 			    //dadwwad
 			    
 			}else if(keyEvent.getCode() == KeyCode.ENTER){
-			    board.clearCell(lastX, lastY);
-			    snake.changePos();
+			    //board.clearCell(lastX, lastY);
+			    //snake.changePos();
 			}
 			
 			
 			
 			//snake.changePos();
-			for(int i=0; i<snake.body.size(); i++){
-			    if (i==0){
-				board.setBckg(snake.body.get(0).get(0),
-					      snake.body.get(0).get(1),
-					      true);
-			    }else{
-				board.setBckg(snake.body.get(i).get(0),
-					      snake.body.get(i).get(1),
-					      false);
-			    }
-			    
-			}
-			
-			if(snake.isCollision()){
-			    System.out.println("Koniec gry");
-			    board.drawDeadHead(snake.getX(), snake.getY());
-			    snake.isDead = true;
-			    return;
-			}
 			
 			System.out.println(" ---- ");
 			System.out.println(snake.getTowardX() + " " + snake.getTowardY());
