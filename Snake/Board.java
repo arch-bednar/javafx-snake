@@ -10,78 +10,84 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.paint.Color;
 import java.util.ArrayList;
-import javafx.scene.shape.Line;
+import javafx.stage.Screen;
+import javafx.geometry.Rectangle2D;
 
 public class Board extends GridPane{
 
-    //private Pane[][] paneArr = new Pane[10][10];
-    private ArrayList<ArrayList<Pane>> paneArr = new ArrayList<ArrayList<Pane>>();
+    public ArrayList<ArrayList<Pane>> paneArr = new ArrayList<ArrayList<Pane>>();
     
     public Board(){
-	this.setStyle("-fx-border-color: black;");
+	//this.setStyle("-fx-border-color: black;");
+
+	Rectangle2D screen = Screen.getPrimary().getBounds();
 	
-	for(int i = 0; i<20; i++){
-	    this.getColumnConstraints().add(new ColumnConstraints(15));
+	
+	for(int i = 0; i<80; i++){
+	    this.getColumnConstraints().add(new ColumnConstraints(screen.getWidth() * 0.4 / 80));
+	    //System.out.println(screen.getWidth() * 0.4 / 80);
 	}
 
-	for(int i=0; i<20; i++){
-	    this.getRowConstraints().add(new RowConstraints(15));
+	for(int i=0; i<80; i++){
+	    this.getRowConstraints().add(new RowConstraints(screen.getWidth() * 0.4/ 80));
 	}
 
-	for (int i=0; i<20; i++){
+	for (int i=0; i<80; i++){
+	    
 	    paneArr.add(new ArrayList<Pane>());
-	    for (int j=0; j<20; j++){
+
+	    for (int j=0; j<80; j++){
 		Pane pane = new Pane();
-		if(i == 0 || i == 19 || j == 0 || j == 19){
+
+		if(i == 0 || i == 79 || j == 0 || j == 79){
 		    pane.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
 		}else{
-		    pane.setBackground(new Background(new BackgroundFill(Color.GRAY, null, null)));
+		    pane.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN, null, null)));
 		}
+		
 		this.add(pane, i, j);
-		//this.paneArr[i][j] = pane;
 		paneArr.get(i).add(pane);
+		paneArr.get(i).get(j).getChildren().add(new Food(i, j));
+		paneArr.get(i).get(j).getChildren().get(0).setVisible(false);
+
+		if(i == 40 && j == 40){
+		    System.out.println(getFoodVisibility(i, j));
+		    paneArr.get(i).get(j).getChildren().get(0).setVisible(true);
+		}else{
+		    paneArr.get(i).get(j).getChildren().get(0).setVisible(false);
+		    }
 	    }
 	}
+       
 
-	//setKeyEvent();
     }
 
-    /*    private void setKeyEvent(){
-	  this.setOnKeyReleased(new EventHandler<KeyEvent>(){
-	  public void handle(final KeyEvent keyEvent){
-		    if(keyEvent.getCode() == KeyCode.A){
-		    if(Snake.
-		    }
-		    }
-		    });
-		    }*/
-    
-    public void setBckg(int x, int y, boolean isHead){
-	//Pane pane = new Pane();
-	if(isHead){
-	    paneArr.get(x).get(y).setBackground(new Background(new BackgroundFill(Color.YELLOW, null, null)));
-	}
-	else{
-	    paneArr.get(x).get(y).setBackground(new Background(new BackgroundFill(Color.GREEN, null, null)));
-	}
+    public void setBckg(int x, int y){
+	Background snakeColor = new Background(new BackgroundFill(Color.BLACK, null, null));
+	this.setBckg(x, y, snakeColor);
+    }
 
+    public void setBckg(int x, int y, Background color){
+	
+	paneArr.get(x).get(y).setBackground(color);
 	this.setConstraints(paneArr.get(x).get(y), x, y);
-	//this.add(pane, x, y);
+	
     }
+    
 
     public void clearCell(int x, int y){
-	paneArr.get(x).get(y).setBackground(new Background(new BackgroundFill(Color.GRAY, null, null)));
+	paneArr.get(x).get(y).setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN, null, null)));
     }
 
     public void drawDeadHead(int x, int y){
-	paneArr.get(x).get(y).getChildren().add(this.drawLine(0, 0, 15, 15));
-	paneArr.get(x).get(y).getChildren().add(this.drawLine(15, 0, 0, 15));
+
+	Background deadHead = new Background(new BackgroundFill(Color.RED, null, null));
+	this.setBckg(x, y, deadHead);
     }
 
-    public Line drawLine(int startX, int startY, int endX, int endY){
-	Line line = new Line(startX, startY, endX, endY);
-	line.setFill(Color.RED);
-	return line;
+    public boolean getFoodVisibility(int x, int y){
+	return paneArr.get(x).get(y).getChildren().get(0).isVisible();
     }
 
+    
 }

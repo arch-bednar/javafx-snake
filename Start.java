@@ -1,4 +1,3 @@
-
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.stage.Screen;
@@ -18,6 +17,7 @@ import javafx.scene.image.ImageView;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.layout.Pane;
 import java.util.concurrent.TimeUnit;
+import java.util.Random;
 
 import Snake.*;
 
@@ -28,6 +28,7 @@ public class Start extends Application{
     public Snake snake;
     public Board board;
     private Thread moving;
+    private boolean isPause = true;
     boolean isDead = false;
     
     public void menu(Stage mainStage){
@@ -74,10 +75,9 @@ public class Start extends Application{
 
 	Button b = new Button();
 	b.setAlignment(Pos.CENTER_RIGHT);
-	//HBox root = new HBox(100);
+
 	Group root = new Group();
 	root.getChildren().addAll(bck, buttons);
-	//root.setAlignment(Pos.CENTER_LEFT);
 
 	Scene scene = new Scene(root,
 				(int)(screenRes.getWidth() * div),
@@ -93,40 +93,19 @@ public class Start extends Application{
 
 	board = new Board();
 
-	board.setGridLinesVisible(true);
+	//board.setGridLinesVisible(true);
 
 	snake = new Snake();
-	
-	//snakes head
-	/*
-	board.setBckg(snake.body.get(0).get(0),
-		      snake.body.get(0).get(1),
-		      true);
-	
-	board.setBckg(snake.body.get(1).get(0),
-		      snake.body.get(1).get(1),
-		      false);
-	*/
-	/*
-	board.setOnKeyPressed(new EventHandler<KeyEvent>(){
-		public void handle(final KeyEvent keyEvent){
-		    if(keyEvent.getCode() == KeyCode.ENTER){
-			//this.setPressed(keyEvent.getEventType() == KeyEvent.KEY_PRESSED);
-			//this.setBckg(2,3, false);
-			System.out.println("Enter");
-		    }
-		}
-	    });
-
-	*/
 	
 	BorderPane root = new BorderPane();
 	root.setCenter(board);
 
 	Pane score = new Pane();
-	root.setLeft(score);
+	root.setBottom(score);
 
-	Scene scene = new Scene(root, 300, 300);
+	double res = Screen.getPrimary().getBounds().getWidth();
+	
+	Scene scene = new Scene(root, res*0.4 + res*0.1, res*0.4+120);
 	createKeyEvent(scene);
 
 
@@ -134,130 +113,145 @@ public class Start extends Application{
 	myGame.show();
 
 	
-	moving = new Thread(){
-		
-		public void run(){
-		
-		    int lastX, lastY;
-		    while(!snake.isDead && myGame.isShowing()){
-
-			lastX = snake.getLastX();
-			lastY = snake.getLastY();
-
-			snake.changePos();
-			
-			for(int i=0; i<snake.body.size(); i++){
-			    if (i==0){
-				board.setBckg(snake.body.get(0).get(0),
-					      snake.body.get(0).get(1),
-					      true);
-			    }else{
-				board.setBckg(snake.body.get(i).get(0),
-					      snake.body.get(i).get(1),
-					      false);
-			    }
-			    
-			}
-
-			board.clearCell(lastX, lastY);
-			
-			if(snake.isCollision()){
-			    System.out.println("Koniec gry");
-			    board.drawDeadHead(snake.getX(), snake.getY());
-			    snake.isDead = true;
-			    return;
-			}
-		    
-
-
-		    System.out.println(" ---- ");
-		    System.out.println(snake.getTowardX() + " " + snake.getTowardY());
-		    System.out.println(snake.getX() + " " + snake.getY());
-
-
-		    try{
-			Thread.sleep(1000);
-			System.out.println("sleep");
-		    }catch(InterruptedException ex){
-			ex.getMessage();
-		    }
-		    
-		    }
-		}
-	    };
-
-
+	Engine moving = new Engine(myGame);
 	moving.start();
-	
 	
     }
 
+    ////////////////////////////////////////////
+    //Private class for engine
+    //moving snake and generate food
+    private class Engine extends Thread{
+
+	Stage myGame;
+	
+	Engine(Stage scene){
+	    this.myGame = scene;
+	}
+	
+	public void run(){
+
+	    int lastX, lastY;
+	    
+	    while(!snake.isDead && myGame.isShowing()){
+
+		while(isPause && myGame.isShowing()){
+		    drawSnake();
+		    isEaten();
+		}
+
+		if(!myGame.isShowing())
+		    continue;
+		
+		lastX = snake.getLastX();
+		lastY = snake.getLastY();
+		board.clearCell(lastX, lastY);
+		
+		snake.changePos();
+		drawSnake();
+		
+		isEaten();
+		
+		
+		if(snake.isCollision()){
+		    System.out.println("Koniec gry");
+		    
+		    board.drawDeadHead(snake.getX(), snake.getY());
+		    
+		    snake.isDead = true;
+		    continue;
+		}
+	    }
+	}
+
+	private void drawSnake(){
+
+	    for(int i=0; i<snake.body.size(); i++){
+		
+		board.setBckg(snake.body.get(i).get(0),
+			      snake.body.get(i).get(1));
+		
+	    }
+	}
+
+	private void isEaten(){
+	    if(board.getFoodVisibility(snake.getX(), snake.getY()) == true){
+		board.paneArr.get(snake.getX()).get(snake.getY()).getChildren().get(0).setVisible(false);
+		snake.resizeBody();
+		this.generateFood();
+	    }
+	}
+
+	private void generateFood(){
+	    Random generator = new Random();
+	    int x,y;
+
+	    do{
+
+		x = generator.nextInt(79);
+		y = generator.nextInt(79);
+		if(x == 0) { x = 1; }
+		if(y == 0) { y = 1; }
+		
+	    }while(!isCorrect(x, y));
+
+	    board.paneArr.get(x).get(y).getChildren().get(0).setVisible(true);
+	}
+
+	private boolean isCorrect(int x, int y){
+	    for( int part=0; part < snake.body.size(); part++){
+		if(snake.body.get(part).get(0) == x &&
+		   snake.body.get(part).get(1) == y) {
+		    return false;
+		}
+	    }
+	    return true;
+	}
+    }
+    /////////////////////////////////
+	
+	
     public void createKeyEvent(Scene myScene){
 	myScene.setOnKeyPressed(new EventHandler<KeyEvent>(){
 		@Override
 		public void handle(KeyEvent keyEvent){
 		    
 		    if(!snake.isDead){
-			
+
 			int lastX, lastY;
 			lastX = snake.getLastX();
 			lastY = snake.getLastY();
 			
-			
-			if(keyEvent.getCode() == KeyCode.D){
-			    
-			    if(snake.getTowardX() == 0 && snake.getTowardY() == 1){
-				snake.setTowardX(-1);
-				snake.setTowardY(0);
-			    }else if(snake.getTowardX() == 1 && snake.getTowardY() == 0){
-				snake.setTowardX(0);
-				snake.setTowardY(1);
-			    }else if(snake.getTowardX() == -1 && snake.getTowardY() == 0){
-				snake.setTowardX(0);
-				snake.setTowardY(-1);
-			    }else if(snake.getTowardX() == 0 && snake.getTowardY() == -1){
-				snake.setTowardX(1);
-				snake.setTowardY(0);
+			if(keyEvent.getCode() == KeyCode.A){
+
+			    if(snake.getTowardX() != 1 && snake.getTowardY() != 0){
+				snake.setToward(-1, 0);
 			    }
 			    
-			    //board.clearCell(lastX, lastY);
-			    //snake.changePos();
-			}
-			else if(keyEvent.getCode() == KeyCode.A){
-			    
-			    if(snake.getTowardX() == 0 && snake.getTowardY() == -1){
-				snake.setTowardX(-1);
-				snake.setTowardY(0);
-			    }else if(snake.getTowardX() == -1 && snake.getTowardY() == 0){
-				snake.setTowardX(0);
-				snake.setTowardY(1);
-			    }else if(snake.getTowardX() == 1 && snake.getTowardY() == 0){
-				snake.setTowardX(0);
-				snake.setTowardY(-1);
-			    }else if(snake.getTowardX() == 0 && snake.getTowardY() == 1){
-				snake.setTowardX(1);
-				snake.setTowardY(0);
+			}else if(keyEvent.getCode() == KeyCode.D){
+
+			    if(snake.getTowardX() != -1 && snake.getTowardY() != 0){
+				snake.setToward(1, 0);
 			    }
 			    
-			    //board.clearCell(lastX, lastY);
-			    //snake.changePos();
+			}else if(keyEvent.getCode() == KeyCode.W){
+
+			    if(snake.getTowardX() != 0 && snake.getTowardY() != 1){
+				snake.setToward(0, -1);
+			    }
 			    
-			    //dadwwad
-			    
+			}else if(keyEvent.getCode() == KeyCode.S){
+
+			    if(snake.getTowardX() != 0 && snake.getTowardY() != -1){
+				snake.setToward(0, 1);
+			    }
 			}else if(keyEvent.getCode() == KeyCode.ENTER){
-			    //board.clearCell(lastX, lastY);
-			    //snake.changePos();
+			    if( isPause == false){
+				isPause = true;
+			    }else{
+				isPause = false;
+			    }
 			}
-			
-			
-			
-			//snake.changePos();
-			
-			System.out.println(" ---- ");
-			System.out.println(snake.getTowardX() + " " + snake.getTowardY());
-			System.out.println(snake.getX() + " " + snake.getY());
-			
-	
 		    }
 		}
 	    });

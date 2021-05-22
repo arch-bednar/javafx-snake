@@ -7,52 +7,44 @@ public class Snake{
 
     public ArrayList<ArrayList<Integer>> body = new ArrayList<ArrayList<Integer>>();
 
-    private int[] toward = {0, -1}; //toward x,y
+    private int[] toward = {0, 1}; //toward x,y
     public static boolean isDead = false;
     
     public Snake(){
-	for(int i=0; i<5; i++){
+	for(int i=0; i<8; i++){
 	    body.add(new ArrayList<Integer>());
+	    body.get(i).add(10);
+	    body.get(i).add(10-i);
 	}
 
-	body.get(0).add(12);
-	body.get(0).add(12);
-	body.get(1).add(13);
-	body.get(1).add(12);
-	body.get(2).add(14);
-	body.get(2).add(12);
-	body.get(3).add(15);
-	body.get(3).add(12);
-	body.get(4).add(16);
-	body.get(4).add(12);
     }
 
-    public void changePos(){
+    public synchronized void changePos(){
+
 	int tempX, tempY, tX, tY;
 	tempX = body.get(0).get(0);
 	tempY = body.get(0).get(1);
 
-	//body.get(0).set(0, tempX+toward[0]);
-	//body.get(0).set(1, tempY+toward[1]);
-
 	body.set(0, new ArrayList<Integer>(Arrays.asList(tempX+toward[0],
 							 tempY+toward[1])));
 
-	System.out.println(body.get(0).get(1));
+	//System.out.println(body.get(0).get(1));
+	//System.out.println(tempX+toward[0] + " " + (tempY+toward[1]) + " wspo");
 
-	
-	System.out.println(tempX+toward[0] + " " + (tempY+toward[1]) + " wspo");
 	for(int row=1; row<body.size(); row++){
 	    tX=body.get(row).get(0);
 	    tY=body.get(row).get(1);
-
-	    //body.get(0).set(0, tempX);
-	    //body.get(0).set(1, tempY);
 
 	    body.set(row, new ArrayList<Integer>(Arrays.asList(tempX, tempY)));
 	    
 	    tempX=tX;
 	    tempY=tY;
+	}
+
+	try{
+	    Thread.sleep(100);
+	}catch(InterruptedException ex){
+	    ex.getMessage();
 	}
     }
 
@@ -61,7 +53,7 @@ public class Snake{
 	lastX = body.get(body.size()-1).get(0);
 	lastY = body.get(body.size()-1).get(1);
 	
-	changePos();
+	//changePos();
 	
 	body.add(new ArrayList<Integer>());
 	body.get(body.size()-1).add(lastX);
@@ -78,9 +70,9 @@ public class Snake{
 		return true;
 	    }
 	}
-	if(headX == 0 || headX == 19){
+	if(headX == 0 || headX == 79){
 	    return true;
-	}else if(headY == 0 || headY == 19){
+	}else if(headY == 0 || headY == 79){
 	    return true;
 	}
 	
@@ -117,5 +109,11 @@ public class Snake{
 
     public void setTowardY(int y){
 	toward[1] = y;
+    }
+
+    public synchronized void setToward(int x, int y){
+
+	    this.setTowardX(x);
+	    this.setTowardY(y);
     }
 }
